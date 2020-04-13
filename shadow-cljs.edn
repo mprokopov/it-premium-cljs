@@ -1,0 +1,16 @@
+{:source-paths ["src"]
+ :dependencies [[reagent "0.10.0"]
+                [cljs-http "0.1.46"]]
+ :dev-http {8080 "target/hugo/"}
+ :builds {:app {:output-dir "target/hugo/"
+                :asset-path "."
+                :target :browser
+                :dev {:closure-defines {app.main/VERBOSE true
+                                        app.main/API-URI "/en.json"}}
+                :release {:closure-defines {app.main/VERBOSE false
+                                            app.main/API-URI "index.json"
+                                            }
+                          :output-dir "prod"
+                          }
+                :modules {:main {:init-fn app.main/main!}}
+                :devtools {:after-load app.main/reload!}}}}

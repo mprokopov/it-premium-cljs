@@ -107,8 +107,8 @@
    [:div.amount
     [:input.amount-input {:type :text :value count :on-change (fn [e] (change-counter id (-> e .-target .-value)) )}]
     [:div.amount-change
-     [:a.up {:on-click #(inc-counter id)} "+"]
-     [:a.down {:on-click #(dec-counter id)} "-"]]]
+     [:button.up {:on-click #(inc-counter id)} "+"]
+     [:button.down {:on-click #(dec-counter id)} "-"]]]
    (when input-name
      [:span.text input-name])])
 
@@ -289,7 +289,7 @@
     [prices]
     [three-columns
      [level ""
-      [:a.level-item.button.is-primary.is-medium {:on-click next-step} (get-in @locale-resources [:price :calculate])]]]
+      [:button.level-item.button.is-primary.is-medium {:on-click next-step} (get-in @locale-resources [:price :calculate])]]]
     [ben/benefits @benefits-locale]]])
 
 (defn app []

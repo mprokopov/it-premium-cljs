@@ -2,7 +2,7 @@
  :dependencies [[reagent "0.10.0"]
                 [cljs-http "0.1.46"]]
  :dev-http {8080 "target/hugo/"}
- :builds {:app {:output-dir "target/hugo/"
+ :builds {:app {:output-dir "target/hugo/js/"
                 :asset-path "."
                 :target :browser
                 :dev {:closure-defines {app.main/VERBOSE true

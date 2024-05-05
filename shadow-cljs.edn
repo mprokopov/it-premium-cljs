@@ -1,6 +1,6 @@
 {:source-paths ["src"]
- :dependencies [[reagent "0.10.0"]
-                [cljs-http "0.1.46"]]
+ :dependencies [[reagent "1.2.0"]
+                [cljs-http "0.1.48"]]
  :dev-http {8080 "target/hugo/"}
  :builds {:app {:output-dir "target/hugo/js/"
                 :asset-path "."

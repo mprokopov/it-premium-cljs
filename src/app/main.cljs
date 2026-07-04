@@ -24,8 +24,23 @@
 
 (defonce customer (r/atom {:name "" :company "" :phone "" :email ""}))
 
-(defn add-service [{:keys [id price count] :as item}]
-  (swap! arr assoc id (assoc item :sum (* price count))))
+(defn service-price
+  [{:keys [price count basis multiplier]
+    default-selected :default_selected
+    included-count :included_count
+    tier-size :tier_size}]
+  (let [count (or count 0)
+        price (or price 0)]
+    (if (and (some? basis) (some? multiplier))
+      (+ basis
+         (* multiplier
+            (Math/ceil
+             (/ (max (- count (or included-count default-selected 0)) 0)
+                (max (or tier-size 1) 1)))))
+      (* price count))))
+
+(defn add-service [{:keys [id] :as item}]
+  (swap! arr assoc id (assoc item :sum (service-price item))))
 
 (defn add-package [package]
   (let [id (swap! counter-package inc)]
@@ -71,12 +86,7 @@
   (filter :checked (vals @arr)))
 
 (defn calc-price [items]
-  (let [calc-fn (fn [item]
-                  (* (:price item)
-                     (:count item)))]
-    (->>
-     (map calc-fn items)
-     (reduce +))))
+  (reduce + 0 (map service-price items)))
 
 (defn price-with-multiplier
   "m map with keys value and multiplier"
@@ -87,7 +97,7 @@
          (calc-price (checked-items))))))
 
 (defn export []
-  (let [export-keys #(select-keys % [:name :price :sum :count])
+  (let [export-keys #(select-keys (assoc % :sum (service-price %)) [:name :price :sum :count])
         assoc-price (fn [val] (assoc val :value (price-with-multiplier val)))]
     (http/post "https://uhlh3yezw6.execute-api.eu-central-1.amazonaws.com/generate-pdf"
                { :with-credentials? false
@@ -330,7 +340,9 @@
               services (:services body)]
           (doseq [service services]
             (let [transformed (assoc service
-                                     :count (get service :default_selected 1)
+                                     :count (or (:default_count service)
+                                                (:default_selected service)
+                                                1)
                                      :checked (not(nil? (:default_selected service)))
                                      :input-name (:input_name service)
                                      :has-input (:has_input service))]
